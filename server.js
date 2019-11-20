@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var server = http.Server(app);
 var bodyParser = require('body-parser');
-var mongo = require('mongodb');
+//var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
 var db, url = "mongodb+srv://mirsazzathossain:sazzatmir@cluster0-wdd8v.mongodb.net/test?retryWrites=true&w=majority"
@@ -13,21 +13,6 @@ mongoose.connect(url,
 mongoose.connection.on('error', function(err){
   console.log("Could not connect to MongoDB")
 })
-
-var Schema = mongoose.Schema
-var articleSchema = new Schema({
-      title: {
-          type: String,
-          required: "must require title"
-      },
-      content: {
-        type: String, 
-        required: "must require content"
-      }
-    }
-)
-
-var Article = mongoose.model('Article',articleSchema)
 
 
 
@@ -54,32 +39,8 @@ var save = function(form_data){
  */
 
 app.use(bodyParser.urlencoded({extended:true}));
-
+require('./routes/article.routes')(app)
 let articles=[];
-
-app.post('/new_article', function(request, response){
-  //save(request.body);
-  //articles.push(request.body);
-  let article = new Article(request.body);
-  article.save(function(err, data){
-    if(err){
-      return response.status(400).json({msg: "All fields are required!"});
-    }
-    return response.status(200).json({article:data});
-  })
-  //console.log(articles);
-  //response.json({msg: "Successfully recieved"});
-});
-
-app.get('/article/:index', function(request, response){
-  if(articles[request.params.index]){
-    response.render('article.ejs', {
-      article:articles[request.params.index]
-    });
-  }else{
-    response.json({msg:"Article not found"});
-  }
-});
 
 
 
@@ -92,9 +53,11 @@ app.get('/second',function(request,response){
   response.sendFile(__dirname+'/views/index_2.html')
 });
 
+/*
 app.get('/new_article',function(request,response){
   response.sendFile(__dirname+'/views/form.html');
 });
+*/
 
 server.listen(3000, 'localhost', function(){
   console.log('Server running');
